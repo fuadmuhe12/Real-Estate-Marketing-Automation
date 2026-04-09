@@ -25,7 +25,7 @@ export default function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="flex h-screen w-64 flex-col bg-sidebar text-sidebar-foreground">
+    <aside className="hidden md:flex h-screen w-64 flex-col bg-sidebar text-sidebar-foreground">
       {/* Brand */}
       <div className="flex h-16 items-center gap-2.5 px-5">
         <div className="flex size-8 items-center justify-center rounded-lg bg-emerald-500">
@@ -61,7 +61,7 @@ export default function Sidebar() {
                     "group flex items-center gap-2.5 rounded-md px-2.5 py-2 text-[13px] font-medium transition-colors",
                     isActive
                       ? "border-l-2 border-emerald-500 bg-sidebar-accent text-white"
-                      : "border-l-2 border-transparent text-slate-400 hover:bg-white/[0.06] hover:text-slate-200"
+                      : "border-l-2 border-transparent text-slate-400 hover:bg-white/6 hover:text-slate-200"
                   )}
                 >
                   <Icon
