@@ -30,7 +30,7 @@ export default function TokenDisplay() {
         : "text-red-400";
 
   return (
-    <div className="mx-3 mb-3 rounded-lg bg-white/[0.06] p-3">
+    <div className="mx-3 mb-3 rounded-lg bg-white/6 p-3">
       <div className="mb-2 flex items-center gap-2">
         <div className="flex size-6 items-center justify-center rounded-md bg-emerald-500/20">
           <Coins className="size-3.5 text-emerald-400" />
