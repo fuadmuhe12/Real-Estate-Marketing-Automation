@@ -1,0 +1,57 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Agent {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  tokens    Int      @default(100)
+  createdAt DateTime @default(now())
+
+  contents       Content[]
+  automationLogs AutomationLog[]
+}
+
+model Content {
+  id          String   @id @default(cuid())
+  agentId     String
+  agent       Agent    @relation(fields: [agentId], references: [id])
+  audience    String
+  city        String
+  caption     String
+  imagePrompt String
+  brandTone   String
+  createdAt   DateTime @default(now())
+
+  automationLogs AutomationLog[]
+}
+
+model Lead {
+  id            String   @id @default(cuid())
+  name          String
+  phone         String
+  status        String
+  lastContacted DateTime
+  createdAt     DateTime @default(now())
+
+  automationLogs AutomationLog[]
+}
+
+model AutomationLog {
+  id        String   @id @default(cuid())
+  type      String
+  agentId   String
+  agent     Agent    @relation(fields: [agentId], references: [id])
+  contentId String?
+  content   Content? @relation(fields: [contentId], references: [id])
+  leadId    String?
+  lead      Lead?    @relation(fields: [leadId], references: [id])
+  message   String
+  metadata  String?
+  createdAt DateTime @default(now())
+}
