@@ -48,12 +48,12 @@ export async function POST(
     // Generate follow-up message
     const followUpMessage = await generateFollowUp(lead.name, lead.status, agentName);
 
-    // Determine automation type based on lead status
-    const logType = lead.status === "hot" ? "follow_up_generated" : "call_triggered";
-    const logMessage =
-      lead.status === "hot"
-        ? `Generated follow-up message for hot lead: ${lead.name}`
-        : `Simulated call trigger for lead: ${lead.name}`;
+    // Hot leads get a follow-up message; others get a call script
+    const isHot = lead.status === "hot";
+    const logType = isHot ? "follow_up_generated" : "call_triggered";
+    const logMessage = isHot
+      ? `Generated follow-up message for hot lead: ${lead.name}`
+      : `Simulated call with AI script for lead: ${lead.name} (${lead.status})`;
 
     // Deduct tokens + update lead + log in transaction
     const [updatedAgent] = await prisma.$transaction([
@@ -79,6 +79,7 @@ export async function POST(
     return NextResponse.json({
       message: followUpMessage,
       logType,
+      actionLabel: isHot ? "AI Follow-up Message" : "AI Call Script",
       tokens: updatedAgent.tokens,
     });
   } catch (error) {

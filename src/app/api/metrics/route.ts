@@ -14,20 +14,42 @@ export async function GET() {
         select: {
           name: true,
           tokens: true,
-          _count: { select: { contents: true, automationLogs: true } },
+          _count: {
+            select: {
+              contents: true,
+              automationLogs: true,
+            },
+          },
+          automationLogs: {
+            select: { type: true },
+          },
         },
       }),
     ]);
 
-    const tokensUsed = agents.reduce((sum, a) => sum + (100 - a.tokens), 0);
+    // Compute tokens spent from actual actions, not from balance
+    // (balance can increase via recharge, so 100 - balance is wrong)
+    function computeSpent(logs: { type: string }[]) {
+      let spent = 0;
+      for (const log of logs) {
+        if (log.type === "post_simulated") spent += 5;
+        else if (log.type === "follow_up_generated" || log.type === "call_triggered") spent += 10;
+      }
+      return spent;
+    }
 
-    const agentMetrics = agents.map((a) => ({
-      name: a.name,
-      tokensRemaining: a.tokens,
-      tokensUsed: 100 - a.tokens,
-      postsGenerated: a._count.contents,
-      totalActions: a._count.automationLogs,
-    }));
+    const agentMetrics = agents.map((a) => {
+      const spent = computeSpent(a.automationLogs);
+      return {
+        name: a.name,
+        tokensRemaining: a.tokens,
+        tokensSpent: spent,
+        postsGenerated: a._count.contents,
+        totalActions: a._count.automationLogs,
+      };
+    });
+
+    const tokensUsed = agentMetrics.reduce((sum: number, a: { tokensSpent: number }) => sum + a.tokensSpent, 0);
 
     return NextResponse.json({
       postsGenerated,

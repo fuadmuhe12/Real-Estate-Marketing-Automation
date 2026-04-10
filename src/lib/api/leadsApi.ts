@@ -17,6 +17,7 @@ interface SendToAiRequest {
 interface SendToAiResponse {
   message: string;
   logType: string;
+  actionLabel: string;
   tokens: number;
 }
 
