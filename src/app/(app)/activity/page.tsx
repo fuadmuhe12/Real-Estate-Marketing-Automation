@@ -1,10 +1,11 @@
 "use client";
 
-import { Zap } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import ActivityLog from "@/modules/automation/components/ActivityLog";
 
 export default function ActivityPage() {
   return (
-    <div className="p-6">
+    <div className="p-4 md:p-6">
       <div className="mb-6">
         <h1 className="text-2xl font-bold tracking-tight text-foreground">
           Activity
@@ -13,17 +14,12 @@ export default function ActivityPage() {
           Automation log of all AI-triggered actions.
         </p>
       </div>
-      <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border py-20">
-        <div className="flex size-12 items-center justify-center rounded-xl bg-primary/10">
-          <Zap className="size-6 text-primary" />
-        </div>
-        <p className="mt-4 text-sm font-medium text-foreground">
-          Activity log coming in Phase 4
-        </p>
-        <p className="mt-1 text-xs text-muted-foreground">
-          Timeline of posts simulated, follow-ups, and call triggers
-        </p>
-      </div>
+
+      <Card>
+        <CardContent className="p-5">
+          <ActivityLog />
+        </CardContent>
+      </Card>
     </div>
   );
 }

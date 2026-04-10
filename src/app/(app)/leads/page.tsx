@@ -1,29 +1,29 @@
 "use client";
 
-import { Users } from "lucide-react";
+import { useState } from "react";
+import LeadFilters from "@/modules/crm/components/LeadFilters";
+import LeadsList from "@/modules/crm/components/LeadsList";
 
 export default function LeadsPage() {
+  const [statusFilter, setStatusFilter] = useState<string | undefined>(
+    undefined
+  );
+
   return (
-    <div className="p-6">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold tracking-tight text-foreground">
-          Leads
-        </h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Manage your CRM leads and send AI follow-ups.
-        </p>
-      </div>
-      <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border py-20">
-        <div className="flex size-12 items-center justify-center rounded-xl bg-primary/10">
-          <Users className="size-6 text-primary" />
+    <div className="p-4 md:p-6">
+      <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight text-foreground">
+            Leads
+          </h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Manage your CRM leads and send AI follow-ups.
+          </p>
         </div>
-        <p className="mt-4 text-sm font-medium text-foreground">
-          Lead management coming in Phase 3
-        </p>
-        <p className="mt-1 text-xs text-muted-foreground">
-          Filter by status, send leads to AI, log actions
-        </p>
+        <LeadFilters active={statusFilter} onChange={setStatusFilter} />
       </div>
+
+      <LeadsList statusFilter={statusFilter} />
     </div>
   );
 }

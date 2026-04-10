@@ -1,10 +1,21 @@
 "use client";
 
-import { Sparkles } from "lucide-react";
+import { useState } from "react";
+import ContentForm from "@/modules/content-generation/components/ContentForm";
+import ContentResult from "@/modules/content-generation/components/ContentResult";
+
+interface GeneratedContent {
+  caption: string;
+  imagePrompt: string;
+  brandTone: string;
+  tokens: number;
+}
 
 export default function GeneratePage() {
+  const [result, setResult] = useState<GeneratedContent | null>(null);
+
   return (
-    <div className="p-6">
+    <div className="p-4 md:p-6">
       <div className="mb-6">
         <h1 className="text-2xl font-bold tracking-tight text-foreground">
           Generate Content
@@ -13,16 +24,16 @@ export default function GeneratePage() {
           Create AI-powered social media content for your listings.
         </p>
       </div>
-      <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border py-20">
-        <div className="flex size-12 items-center justify-center rounded-xl bg-primary/10">
-          <Sparkles className="size-6 text-primary" />
-        </div>
-        <p className="mt-4 text-sm font-medium text-foreground">
-          Content generation form coming in Phase 3
-        </p>
-        <p className="mt-1 text-xs text-muted-foreground">
-          AI-powered captions, image prompts, and brand tone
-        </p>
+
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <ContentForm onGenerated={setResult} />
+        {result && (
+          <ContentResult
+            caption={result.caption}
+            imagePrompt={result.imagePrompt}
+            brandTone={result.brandTone}
+          />
+        )}
       </div>
     </div>
   );

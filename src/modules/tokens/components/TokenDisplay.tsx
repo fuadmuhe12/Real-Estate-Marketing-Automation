@@ -1,19 +1,23 @@
 "use client";
 
-import { Coins } from "lucide-react";
+import { useState } from "react";
+import { Coins, ShoppingCart } from "lucide-react";
 import { useAppSelector } from "@/lib/store/hooks";
 import { useGetAgentTokensQuery } from "@/lib/api/metricsApi";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import BuyTokensModal from "./BuyTokensModal";
 
 export default function TokenDisplay() {
   const activeAgent = useAppSelector((s) => s.token.activeAgentName);
   const { data, isLoading } = useGetAgentTokensQuery(activeAgent, {
     skip: !activeAgent,
   });
+  const [showBuy, setShowBuy] = useState(false);
 
   const tokens = data?.tokens ?? 0;
   const max = 100;
-  const pct = Math.round((tokens / max) * 100);
+  const pct = max > 0 ? Math.round((tokens / max) * 100) : 0;
 
   const barColor =
     pct > 50
@@ -30,42 +34,59 @@ export default function TokenDisplay() {
         : "text-red-400";
 
   return (
-    <div className="mx-3 mb-3 rounded-lg bg-white/6 p-3">
-      <div className="mb-2 flex items-center gap-2">
-        <div className="flex size-6 items-center justify-center rounded-md bg-emerald-500/20">
-          <Coins className="size-3.5 text-emerald-400" />
+    <>
+      <div className="mx-3 mb-3 rounded-lg bg-white/6 p-3">
+        <div className="mb-2 flex items-center gap-2">
+          <div className="flex size-6 items-center justify-center rounded-md bg-emerald-500/20">
+            <Coins className="size-3.5 text-emerald-400" />
+          </div>
+          <span className="text-xs font-medium text-slate-300 truncate">
+            {activeAgent}
+          </span>
         </div>
-        <span className="text-xs font-medium text-slate-300 truncate">
-          {activeAgent}
-        </span>
+
+        {isLoading ? (
+          <div className="h-8 animate-pulse rounded bg-white/10" />
+        ) : (
+          <>
+            <div className="mb-1.5 flex items-baseline justify-between">
+              <span
+                className={cn("text-lg font-bold tabular-nums", textColor)}
+              >
+                {tokens}
+              </span>
+              <span className="text-[11px] text-slate-500">tokens</span>
+            </div>
+
+            <div className="h-1.5 w-full overflow-hidden rounded-full bg-white/10">
+              <div
+                className={cn(
+                  "h-full rounded-full transition-all duration-500 ease-out",
+                  barColor
+                )}
+                style={{ width: `${pct}%` }}
+              />
+            </div>
+
+            {tokens === 0 ? (
+              <Button
+                size="sm"
+                className="mt-2.5 w-full bg-amber-600 text-white hover:bg-amber-500"
+                onClick={() => setShowBuy(true)}
+              >
+                <ShoppingCart className="size-3.5" />
+                Buy Tokens
+              </Button>
+            ) : (
+              <p className="mt-1.5 text-[11px] text-slate-500">
+                {pct}% remaining
+              </p>
+            )}
+          </>
+        )}
       </div>
 
-      {isLoading ? (
-        <div className="h-8 animate-pulse rounded bg-white/10" />
-      ) : (
-        <>
-          <div className="mb-1.5 flex items-baseline justify-between">
-            <span className={cn("text-lg font-bold tabular-nums", textColor)}>
-              {tokens}
-            </span>
-            <span className="text-[11px] text-slate-500">/ {max} tokens</span>
-          </div>
-
-          <div className="h-1.5 w-full overflow-hidden rounded-full bg-white/10">
-            <div
-              className={cn(
-                "h-full rounded-full transition-all duration-500 ease-out",
-                barColor
-              )}
-              style={{ width: `${pct}%` }}
-            />
-          </div>
-
-          <p className="mt-1.5 text-[11px] text-slate-500">
-            {pct}% remaining
-          </p>
-        </>
-      )}
-    </div>
+      <BuyTokensModal open={showBuy} onOpenChange={setShowBuy} />
+    </>
   );
 }
