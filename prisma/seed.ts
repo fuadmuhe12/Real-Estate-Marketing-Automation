@@ -1,6 +1,19 @@
 import { PrismaClient } from "@prisma/client";
+import { PrismaLibSql } from "@prisma/adapter-libsql";
+import "dotenv/config";
 
-const prisma = new PrismaClient();
+function createClient() {
+  if (process.env.TURSO_DATABASE_URL) {
+    const adapter = new PrismaLibSql({
+      url: process.env.TURSO_DATABASE_URL,
+      authToken: process.env.TURSO_AUTH_TOKEN,
+    });
+    return new PrismaClient({ adapter });
+  }
+  return new PrismaClient();
+}
+
+const prisma = createClient();
 
 async function main() {
   // Create default agent
@@ -13,7 +26,7 @@ async function main() {
     },
   });
 
-  // Create mock leads
+  // Create leads (upsert by phone to be safe on re-runs)
   const leads = [
     {
       name: "Michael Chen",
